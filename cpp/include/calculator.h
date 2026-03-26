@@ -4,5 +4,6 @@
 
 #include <utility>
 
-ExpectedValue EVDealerTurn(const RuleSet& ruleset, HandScore hand);
+ExpectedValue EvDealerTurn(const RuleSet& ruleset,
+                           PlayerHandScore playerHand, DealerHandScore dealerHand);
 

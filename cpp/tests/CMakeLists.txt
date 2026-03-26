@@ -15,6 +15,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_executable(unit_tests
+               calculator.cpp
                hand.cpp)
 
 target_link_libraries(unit_tests blackjack_calculator gtest_main)

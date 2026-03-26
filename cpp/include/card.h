@@ -4,7 +4,7 @@
 struct CardScore {
   unsigned score = 0;
 
-  explicit CardScore(unsigned v) : score(v) { }
+  explicit constexpr CardScore(unsigned v) : score(v) { }
 };
 
 #endif // CARD_H
