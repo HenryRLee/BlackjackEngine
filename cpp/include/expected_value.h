@@ -11,6 +11,10 @@ struct ExpectedValue {
   double value = 0;
 
   explicit constexpr ExpectedValue(double v) : value(v) { }
+
+  bool operator<(ExpectedValue other) const {
+    return this->value < other.value;
+  }
 };
 
 #endif // EXPECTED_VALUE_H

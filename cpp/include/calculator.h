@@ -7,3 +7,11 @@
 ExpectedValue EvDealerTurn(const RuleSet& ruleset,
                            PlayerHandScore playerHand, DealerHandScore dealerHand);
 
+ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
+                                   PlayerHandScore playerHand, DealerHandScore dealerHand);
+
+ExpectedValue EvPlayerStands(const RuleSet& ruleset,
+                             PlayerHandScore playerHand, DealerHandScore dealerHand);
+
+ExpectedValue EvPlayerHits(const RuleSet& ruleset,
+                           PlayerHandScore playerHand, DealerHandScore dealerHand);

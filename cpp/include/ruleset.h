@@ -3,7 +3,7 @@
 
 struct RuleSet {
   bool hitOnSoft17 = false;
-  unsigned numberOfDecks = 1;
+  unsigned char numberOfDecks = 1;
 };
 
 #endif // RULESET_H

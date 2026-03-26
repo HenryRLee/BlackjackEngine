@@ -1,4 +1,5 @@
 #include "calculator.h"
+#include <algorithm>
 #include <array>
 #include <numeric>
 #include <ranges>
@@ -58,3 +59,30 @@ ExpectedValue EvDealerTurn(const RuleSet& ruleset,
   }
 }
 
+ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
+                                   PlayerHandScore playerHand, DealerHandScore dealerHand) {
+  if (playerHand.score > 21)
+    return ExpectedValue(-1.0);
+
+  const ExpectedValue evHit = EvPlayerHits(ruleset, playerHand, dealerHand);
+  const ExpectedValue evStand = EvPlayerStands(ruleset, playerHand, dealerHand);
+
+  return std::max(evHit, evStand);
+}
+
+ExpectedValue EvPlayerStands(const RuleSet& ruleset,
+                             PlayerHandScore playerHand, DealerHandScore dealerHand) {
+  return EvDealerTurn(ruleset, playerHand, dealerHand);
+}
+
+ExpectedValue EvPlayerHits(const RuleSet& ruleset,
+                           PlayerHandScore playerHand, DealerHandScore dealerHand) {
+  auto allCards = std::views::all(AllCards());
+  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
+      [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
+        const DealerHandScore newPlayerHand = playerHand + card;
+        return ExpectedValue(current.value +
+            ProbOfGettingOneCard(card).value *
+            EvPlayerHitsOrStands(ruleset, newPlayerHand, dealerHand).value);
+      });
+}

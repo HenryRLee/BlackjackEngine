@@ -2,9 +2,9 @@
 #define CARD_H
 
 struct CardScore {
-  unsigned score = 0;
+  unsigned char score = 0;
 
-  explicit constexpr CardScore(unsigned v) : score(v) { }
+  explicit constexpr CardScore(unsigned char v) : score(v) { }
 };
 
 #endif // CARD_H
