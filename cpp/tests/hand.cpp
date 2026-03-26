@@ -114,6 +114,13 @@ TEST(HandScoreTests, TestSoftHandAddCard) {
   }
 
   {
+    HandScore hand(16, true);
+    hand += CardScore(2);
+    EXPECT_EQ(hand.score, 18);
+    EXPECT_EQ(hand.isSoft, true);
+  }
+
+  {
     HandScore hand(13, true);
     hand += CardScore(11);
     EXPECT_EQ(hand.score, 14);
