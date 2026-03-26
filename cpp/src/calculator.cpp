@@ -86,3 +86,14 @@ ExpectedValue EvPlayerHits(const RuleSet& ruleset,
             EvPlayerHitsOrStands(ruleset, newPlayerHand, dealerHand).value);
       });
 }
+
+ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
+                              PlayerHandScore playerHand, DealerHandScore dealerHand) {
+  auto allCards = std::views::all(AllCards());
+  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
+      [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
+        const DealerHandScore newPlayerHand = playerHand + card;
+        return ExpectedValue(current.value +
+            2.0 * ProbOfGettingOneCard(card).value * EvPlayerStands(ruleset, newPlayerHand, dealerHand).value);
+      });
+}

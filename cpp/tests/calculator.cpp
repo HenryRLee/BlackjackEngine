@@ -37,3 +37,13 @@ TEST(EvTests, TestPlayer13Dealer6HitOrStand) {
   const ExpectedValue ev = EvPlayerHitsOrStands(RuleSet(), PlayerHandScore(13), DealerHandScore(6));
   EXPECT_NEAR(ev.value, -0.153699, Epsilon);
 }
+
+TEST(EvTests, TestPlayer10Dealer6Double) {
+  const ExpectedValue ev = EvPlayerDoubles(RuleSet(), PlayerHandScore(10), DealerHandScore(6));
+  EXPECT_NEAR(ev.value, 0.575590, Epsilon);
+}
+
+TEST(EvTests, TestPlayer11Dealer7Double) {
+  const ExpectedValue ev = EvPlayerDoubles(RuleSet(), PlayerHandScore(11), DealerHandScore(7));
+  EXPECT_NEAR(ev.value, 0.462889, Epsilon);
+}
