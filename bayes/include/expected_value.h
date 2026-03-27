@@ -1,6 +1,8 @@
 #ifndef EXPECTED_VALUE_H
 #define EXPECTED_VALUE_H
 
+namespace BlackjackBayes {
+
 struct Probability {
   double value = 0;
 
@@ -16,5 +18,7 @@ struct ExpectedValue {
     return this->value < other.value;
   }
 };
+
+} // namespace
 
 #endif // EXPECTED_VALUE_H

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(BlackjackCalcualtorTests LANGUAGES CXX)
+project(BlackjackBayesTests LANGUAGES CXX)
 
 enable_testing()
 
@@ -15,7 +15,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 add_executable(unit_tests
-               calculator.cpp
+               bayes.cpp
                hand.cpp)
 
-target_link_libraries(unit_tests blackjack_calculator gtest_main)
+target_link_libraries(unit_tests blackjack_bayes gtest_main)

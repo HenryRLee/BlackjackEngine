@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
-#include "calculator.h"
+#include "bayes.h"
+
+using namespace BlackjackBayes;
 
 constexpr double Epsilon = 0.000001;
 

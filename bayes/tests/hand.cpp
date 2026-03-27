@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "hand.h"
 
+using namespace BlackjackBayes;
+
 TEST(HandScoreTests, TestBasicAddCard) {
   {
     HandScore hand(2);

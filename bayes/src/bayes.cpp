@@ -1,10 +1,12 @@
-#include "calculator.h"
+#include "bayes.h"
 #include <algorithm>
 #include <array>
 #include <numeric>
 #include <ranges>
 
-static constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHandScore hand) {
+namespace BlackjackBayes {
+
+constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHandScore hand) {
   if (hand.score < 17)
     return true;
 
@@ -14,7 +16,7 @@ static constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHandScore hand
   return hand.isSoft && ruleset.hitOnSoft17;
 }
 
-static constexpr std::array<CardScore, 10> AllCards() {
+constexpr std::array<CardScore, 10> AllCards() {
   return {
     CardScore(2),
     CardScore(3),
@@ -29,7 +31,7 @@ static constexpr std::array<CardScore, 10> AllCards() {
   };
 };
 
-static constexpr Probability ProbOfGettingOneCard(CardScore card) {
+constexpr Probability ProbOfGettingOneCard(CardScore card) {
   if (card.score == 10)
     return Probability(double(4) / 13);
   else
@@ -128,3 +130,5 @@ ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
             2.0 * ProbOfGettingOneCard(card).value * EvPlayerStands(ruleset, newPlayerHand, dealerHand).value);
       });
 }
+
+} // namespace BlackjackBayes

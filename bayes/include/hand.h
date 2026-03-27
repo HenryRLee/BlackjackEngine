@@ -3,6 +3,8 @@
 
 #include "card.h"
 
+namespace BlackjackBayes {
+
 struct HandScore {
   unsigned char score = 0;
   bool isSoft = false;
@@ -48,5 +50,7 @@ struct PlayerHandScore : public HandScore {
   explicit constexpr PlayerHandScore(unsigned char v) : HandScore(v) { }
   constexpr PlayerHandScore(unsigned char v, bool soft) : HandScore(v, soft) { }
 };
+
+} // namespace BlackjackBayes
 
 #endif // HAND_H

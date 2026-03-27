@@ -2,14 +2,14 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Define project name
-project(BlackjackCalculator CXX)
+project(BlackjackBayes CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
 # Add a library target
-add_library(blackjack_calculator src/calculator.cpp)
+add_library(blackjack_bayes src/bayes.cpp)
 
-target_include_directories(blackjack_calculator PUBLIC include)
+target_include_directories(blackjack_bayes PUBLIC include)
 
 # Add an executable target
 # add_executable(main src/main.c)
