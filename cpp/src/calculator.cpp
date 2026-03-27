@@ -36,15 +36,16 @@ static constexpr Probability ProbOfGettingOneCard(CardScore card) {
     return Probability(double(1) / 13);
 }
 
-ExpectedValue EvDealerTurn(const RuleSet& ruleset,
-                           PlayerHandScore playerHand, DealerHandScore dealerHand) {
+ExpectedValue EvDealerRemainingRounds(const RuleSet& ruleset,
+                                      PlayerHandScore playerHand, DealerHandScore dealerHand) {
   if (HitFromDealer(ruleset, dealerHand)) {
     auto allCards = std::views::all(AllCards());
     return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
         [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
           const DealerHandScore newDealerHand = dealerHand + card;
           return ExpectedValue(current.value +
-              ProbOfGettingOneCard(card).value * EvDealerTurn(ruleset, playerHand, newDealerHand).value);
+              ProbOfGettingOneCard(card).value *
+              EvDealerRemainingRounds(ruleset, playerHand, newDealerHand).value);
         });
   } else {
     if (dealerHand.score > 21)
@@ -57,6 +58,36 @@ ExpectedValue EvDealerTurn(const RuleSet& ruleset,
     else
       return ExpectedValue(0.0);
   }
+}
+
+ExpectedValue EvDealerFirstRound(const RuleSet& ruleset,
+                                 PlayerHandScore playerHand, DealerHandScore dealerHand) {
+  /*
+   * We need to deal with the special case that dealer draws a Blackjack.
+   * At this point, we assume the player doesn't have a Blackjack.
+   * And the dealer should have only one card in his hand at the moment.
+   * If the dealer card is not an Ace or anything value at 10, we can run the normal evaluation
+   *   with EvDealerRemainingRounds.
+   */
+  if (dealerHand.score != 10 && dealerHand.score != 11)
+    return EvDealerRemainingRounds(ruleset, playerHand, dealerHand);
+
+  auto allCards = std::views::all(AllCards());
+  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
+      [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
+        const DealerHandScore newDealerHand = dealerHand + card;
+        // Only two cards so far, this must be a Blackjack
+        // The dealer wins regardless of the player score
+        if (newDealerHand.score == 21) {
+          return ExpectedValue(current.value +
+              ProbOfGettingOneCard(card).value * -1.0);
+        }
+
+        return ExpectedValue(current.value +
+            ProbOfGettingOneCard(card).value *
+            EvDealerRemainingRounds(ruleset, playerHand, newDealerHand).value);
+      });
+
 }
 
 ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
@@ -72,7 +103,7 @@ ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset,
                              PlayerHandScore playerHand, DealerHandScore dealerHand) {
-  return EvDealerTurn(ruleset, playerHand, dealerHand);
+  return EvDealerFirstRound(ruleset, playerHand, dealerHand);
 }
 
 ExpectedValue EvPlayerHits(const RuleSet& ruleset,
@@ -80,7 +111,7 @@ ExpectedValue EvPlayerHits(const RuleSet& ruleset,
   auto allCards = std::views::all(AllCards());
   return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
       [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
-        const DealerHandScore newPlayerHand = playerHand + card;
+        const PlayerHandScore newPlayerHand = playerHand + card;
         return ExpectedValue(current.value +
             ProbOfGettingOneCard(card).value *
             EvPlayerHitsOrStands(ruleset, newPlayerHand, dealerHand).value);

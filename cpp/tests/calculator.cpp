@@ -3,11 +3,6 @@
 
 constexpr double Epsilon = 0.000001;
 
-TEST(EvTests, TestPlayer21Dealer16Stand) {
-  const ExpectedValue ev = EvDealerTurn(RuleSet(), PlayerHandScore(21), DealerHandScore(16));
-  EXPECT_NEAR(ev.value, 0.923077, Epsilon);
-}
-
 TEST(EvTests, TestPlayer16Dealer9Hit) {
   const ExpectedValue ev = EvPlayerHits(RuleSet(), PlayerHandScore(16), DealerHandScore(9));
   EXPECT_NEAR(ev.value, -0.509322, Epsilon);
@@ -21,6 +16,21 @@ TEST(EvTests, TestPlayer16Dealer9Stand) {
 TEST(EvTests, TestPlayer16Dealer9HitOrStand) {
   const ExpectedValue ev = EvPlayerHitsOrStands(RuleSet(), PlayerHandScore(16), DealerHandScore(9));
   EXPECT_NEAR(ev.value, -0.509322, Epsilon);
+}
+
+TEST(EvTests, TestPlayer16Dealer10Hit) {
+  const ExpectedValue ev = EvPlayerHits(RuleSet(), PlayerHandScore(16), DealerHandScore(10));
+  EXPECT_NEAR(ev.value, -0.575224, Epsilon);
+}
+
+TEST(EvTests, TestPlayer16Dealer10Stand) {
+  const ExpectedValue ev = EvPlayerStands(RuleSet(), PlayerHandScore(16), DealerHandScore(10));
+  EXPECT_NEAR(ev.value, -0.575782, Epsilon);
+}
+
+TEST(EvTests, TestPlayer16Dealer10HitOrStand) {
+  const ExpectedValue ev = EvPlayerHitsOrStands(RuleSet(), PlayerHandScore(16), DealerHandScore(10));
+  EXPECT_NEAR(ev.value, -0.575224, Epsilon);
 }
 
 TEST(EvTests, TestPlayer13Dealer6Hit) {
@@ -48,6 +58,26 @@ TEST(EvTests, TestPlayer11Dealer7Double) {
   EXPECT_NEAR(ev.value, 0.462889, Epsilon);
 }
 
+TEST(EvTests, TestPlayer9DealerAceHit) {
+  const ExpectedValue ev = EvPlayerHits(RuleSet(), PlayerHandScore(9), DealerHandScore(11, true));
+  EXPECT_NEAR(ev.value, -0.353164, Epsilon);
+}
+
+TEST(EvTests, TestPlayer9DealerAceStand) {
+  const ExpectedValue ev = EvPlayerStands(RuleSet(), PlayerHandScore(9), DealerHandScore(11, true));
+  EXPECT_NEAR(ev.value, -0.769427, Epsilon);
+}
+
+TEST(EvTests, TestPlayer4DealerAceHit) {
+  const ExpectedValue ev = EvPlayerHits(RuleSet(), PlayerHandScore(4), DealerHandScore(11, true));
+  EXPECT_NEAR(ev.value, -0.482899, Epsilon);
+}
+
+TEST(EvTests, TestPlayer4DealerAceStand) {
+  const ExpectedValue ev = EvPlayerStands(RuleSet(), PlayerHandScore(4), DealerHandScore(11, true));
+  EXPECT_NEAR(ev.value, -0.769427, Epsilon);
+}
+
 TEST(EvTests, TestPlayerSoft16Dealer9Hit) {
   const ExpectedValue ev = EvPlayerHits(RuleSet(), PlayerHandScore(16, true), DealerHandScore(9));
   EXPECT_NEAR(ev.value, -0.148644, Epsilon);
@@ -63,7 +93,12 @@ TEST(EvTests, TestPlayerSoft16Dealer9Doubles) {
   EXPECT_NEAR(ev.value, -0.456367, Epsilon);
 }
 
-TEST(EvTests, TestPlayerSoft19DealerSoft11Stands) {
+TEST(EvTests, TestPlayerSoft19DealerAceHits) {
+  const ExpectedValue ev = EvPlayerHits(RuleSet(), PlayerHandScore(19, true), DealerHandScore(11, true));
+  EXPECT_NEAR(ev.value, -0.311668, Epsilon);
+}
+
+TEST(EvTests, TestPlayerSoft19DealerAceStands) {
   const ExpectedValue ev = EvPlayerStands(RuleSet(), PlayerHandScore(19, true), DealerHandScore(11, true));
   EXPECT_NEAR(ev.value, -0.115483, Epsilon);
 }
