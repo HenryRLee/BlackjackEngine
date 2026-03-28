@@ -6,7 +6,7 @@
 
 namespace BlackjackBayes {
 
-constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHandScore hand) {
+constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHand hand) {
   if (hand.score < 17)
     return true;
 
@@ -16,22 +16,22 @@ constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHandScore hand) {
   return hand.isSoft && ruleset.hitOnSoft17;
 }
 
-constexpr std::array<CardScore, 10> AllCards() {
+constexpr std::array<Card, 10> AllCards() {
   return {
-    CardScore(2),
-    CardScore(3),
-    CardScore(4),
-    CardScore(5),
-    CardScore(6),
-    CardScore(7),
-    CardScore(8),
-    CardScore(9),
-    CardScore(10),
-    CardScore(11),
+    Card(2),
+    Card(3),
+    Card(4),
+    Card(5),
+    Card(6),
+    Card(7),
+    Card(8),
+    Card(9),
+    Card(10),
+    Card(11),
   };
 };
 
-constexpr Probability ProbOfGettingOneCard(CardScore card) {
+constexpr Probability ProbOfGettingOneCard(Card card) {
   if (card.score == 10)
     return Probability(double(4) / 13);
   else
@@ -39,12 +39,12 @@ constexpr Probability ProbOfGettingOneCard(CardScore card) {
 }
 
 ExpectedValue EvDealerRemainingRounds(const RuleSet& ruleset,
-                                      PlayerHandScore playerHand, DealerHandScore dealerHand) {
+                                      PlayerHand playerHand, DealerHand dealerHand) {
   if (HitFromDealer(ruleset, dealerHand)) {
     auto allCards = std::views::all(AllCards());
     return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-        [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
-          const DealerHandScore newDealerHand = dealerHand + card;
+        [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
+          const DealerHand newDealerHand = dealerHand + card;
           return ExpectedValue(current.value +
               ProbOfGettingOneCard(card).value *
               EvDealerRemainingRounds(ruleset, playerHand, newDealerHand).value);
@@ -63,7 +63,7 @@ ExpectedValue EvDealerRemainingRounds(const RuleSet& ruleset,
 }
 
 ExpectedValue EvDealerFirstRound(const RuleSet& ruleset,
-                                 PlayerHandScore playerHand, DealerHandScore dealerHand) {
+                                 PlayerHand playerHand, DealerHand dealerHand) {
   /*
    * We need to deal with the special case that dealer draws a Blackjack.
    * At this point, we assume the player doesn't have a Blackjack.
@@ -76,8 +76,8 @@ ExpectedValue EvDealerFirstRound(const RuleSet& ruleset,
 
   auto allCards = std::views::all(AllCards());
   return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-      [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
-        const DealerHandScore newDealerHand = dealerHand + card;
+      [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
+        const DealerHand newDealerHand = dealerHand + card;
         // Only two cards so far, this must be a Blackjack
         // The dealer wins regardless of the player score
         if (newDealerHand.score == 21) {
@@ -93,7 +93,7 @@ ExpectedValue EvDealerFirstRound(const RuleSet& ruleset,
 }
 
 ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
-                                   PlayerHandScore playerHand, DealerHandScore dealerHand) {
+                                   PlayerHand playerHand, DealerHand dealerHand) {
   if (playerHand.score > 21)
     return ExpectedValue(-1.0);
 
@@ -104,16 +104,16 @@ ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
 }
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset,
-                             PlayerHandScore playerHand, DealerHandScore dealerHand) {
+                             PlayerHand playerHand, DealerHand dealerHand) {
   return EvDealerFirstRound(ruleset, playerHand, dealerHand);
 }
 
 ExpectedValue EvPlayerHits(const RuleSet& ruleset,
-                           PlayerHandScore playerHand, DealerHandScore dealerHand) {
+                           PlayerHand playerHand, DealerHand dealerHand) {
   auto allCards = std::views::all(AllCards());
   return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-      [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
-        const PlayerHandScore newPlayerHand = playerHand + card;
+      [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
+        const PlayerHand newPlayerHand = playerHand + card;
         return ExpectedValue(current.value +
             ProbOfGettingOneCard(card).value *
             EvPlayerHitsOrStands(ruleset, newPlayerHand, dealerHand).value);
@@ -121,11 +121,11 @@ ExpectedValue EvPlayerHits(const RuleSet& ruleset,
 }
 
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
-                              PlayerHandScore playerHand, DealerHandScore dealerHand) {
+                              PlayerHand playerHand, DealerHand dealerHand) {
   auto allCards = std::views::all(AllCards());
   return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-      [&ruleset, playerHand, dealerHand] (ExpectedValue current, CardScore card) {
-        const DealerHandScore newPlayerHand = playerHand + card;
+      [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
+        const DealerHand newPlayerHand = playerHand + card;
         return ExpectedValue(current.value +
             2.0 * ProbOfGettingOneCard(card).value * EvPlayerStands(ruleset, newPlayerHand, dealerHand).value);
       });

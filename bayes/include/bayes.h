@@ -7,15 +7,15 @@
 namespace BlackjackBayes {
 
 ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
-                                   PlayerHandScore playerHand, DealerHandScore dealerHand);
+                                   PlayerHand playerHand, DealerHand dealerHand);
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset,
-                             PlayerHandScore playerHand, DealerHandScore dealerHand);
+                             PlayerHand playerHand, DealerHand dealerHand);
 
 ExpectedValue EvPlayerHits(const RuleSet& ruleset,
-                           PlayerHandScore playerHand, DealerHandScore dealerHand);
+                           PlayerHand playerHand, DealerHand dealerHand);
 
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
-                              PlayerHandScore playerHand, DealerHandScore dealerHand);
+                              PlayerHand playerHand, DealerHand dealerHand);
 
 } // namespace BlackjackBayes

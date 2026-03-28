@@ -5,14 +5,14 @@
 
 namespace BlackjackBayes {
 
-struct HandScore {
+struct Hand {
   unsigned char score = 0;
   bool isSoft = false;
 
-  explicit constexpr HandScore(unsigned char v) : score(v) { }
-  constexpr HandScore(unsigned char v, bool soft) : score(v), isSoft(soft) { }
+  explicit constexpr Hand(unsigned char v) : score(v) { }
+  constexpr Hand(unsigned char v, bool soft) : score(v), isSoft(soft) { }
 
-  constexpr HandScore& operator+=(CardScore card) {
+  constexpr Hand& operator+=(Card card) {
 	score = score + card.score;
 
     if (score > 21) {
@@ -30,25 +30,25 @@ struct HandScore {
 	return *this;
   }
 
-  constexpr HandScore operator+(CardScore card) const {
-    HandScore newScore(*this);
+  constexpr Hand operator+(Card card) const {
+    Hand newScore(*this);
     newScore += card;
     return newScore;
   }
 };
 
-struct DealerHandScore : public HandScore {
-  constexpr DealerHandScore(const DealerHandScore& hand) = default;
-  constexpr DealerHandScore(const HandScore& hand) : HandScore(hand) { }
-  explicit constexpr DealerHandScore(unsigned char v) : HandScore(v) { }
-  constexpr DealerHandScore(unsigned char v, bool soft) : HandScore(v, soft) { }
+struct DealerHand : public Hand {
+  constexpr DealerHand(const DealerHand& hand) = default;
+  constexpr DealerHand(const Hand& hand) : Hand(hand) { }
+  explicit constexpr DealerHand(unsigned char v) : Hand(v) { }
+  constexpr DealerHand(unsigned char v, bool soft) : Hand(v, soft) { }
 };
 
-struct PlayerHandScore : public HandScore {
-  constexpr PlayerHandScore(const PlayerHandScore& hand) = default;
-  constexpr PlayerHandScore(const HandScore& hand) : HandScore(hand) { }
-  explicit constexpr PlayerHandScore(unsigned char v) : HandScore(v) { }
-  constexpr PlayerHandScore(unsigned char v, bool soft) : HandScore(v, soft) { }
+struct PlayerHand : public Hand {
+  constexpr PlayerHand(const PlayerHand& hand) = default;
+  constexpr PlayerHand(const Hand& hand) : Hand(hand) { }
+  explicit constexpr PlayerHand(unsigned char v) : Hand(v) { }
+  constexpr PlayerHand(unsigned char v, bool soft) : Hand(v, soft) { }
 };
 
 } // namespace BlackjackBayes

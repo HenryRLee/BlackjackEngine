@@ -3,10 +3,10 @@
 
 namespace BlackjackBayes {
 
-struct CardScore {
+struct Card {
   unsigned char score = 0;
 
-  explicit constexpr CardScore(unsigned char v) : score(v) { }
+  explicit constexpr Card(unsigned char v) : score(v) { }
 };
 
 } // namespace
