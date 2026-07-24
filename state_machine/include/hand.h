@@ -3,7 +3,7 @@
 
 #include "card.h"
 
-namespace BlackjackBayes {
+namespace BlackjackEngine {
 
 struct Hand {
   unsigned char score = 0;
@@ -51,6 +51,6 @@ struct PlayerHand : public Hand {
   constexpr PlayerHand(unsigned char v, bool soft) : Hand(v, soft) { }
 };
 
-} // namespace BlackjackBayes
+} // namespace BlackjackEngine
 
 #endif // HAND_H

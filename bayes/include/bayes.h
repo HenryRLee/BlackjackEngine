@@ -4,7 +4,7 @@
 
 #include <utility>
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::Bayes {
 
 ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
                                    PlayerHand playerHand, DealerHand dealerHand);
@@ -18,4 +18,4 @@ ExpectedValue EvPlayerHits(const RuleSet& ruleset,
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
                               PlayerHand playerHand, DealerHand dealerHand);
 
-} // namespace BlackjackBayes
+} // namespace BlackjackEngine::Bayes

@@ -1,7 +1,7 @@
 #ifndef EXPECTED_VALUE_H
 #define EXPECTED_VALUE_H
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::Bayes {
 
 struct Probability {
   double value = 0;

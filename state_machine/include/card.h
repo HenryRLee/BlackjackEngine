@@ -1,7 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 
-namespace BlackjackBayes {
+namespace BlackjackEngine {
 
 struct Card {
   unsigned char score = 0;

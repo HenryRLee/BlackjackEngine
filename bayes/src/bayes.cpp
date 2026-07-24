@@ -4,7 +4,7 @@
 #include <numeric>
 #include <ranges>
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::Bayes {
 
 constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHand hand) {
   if (hand.score < 17)
@@ -131,4 +131,4 @@ ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
       });
 }
 
-} // namespace BlackjackBayes
+} // namespace BlackjackEngine::Bayes
