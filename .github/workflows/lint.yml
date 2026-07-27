@@ -1,0 +1,36 @@
+name: lint
+
+# Blocking clang-format check. Runs on every push and pull request and fails if
+# any tracked C/C++ source in the project is not formatted according to
+# .clang-format (Google style). The lint-suggest workflow posts inline fix
+# suggestions on pull requests.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install clang-format
+        run: pip install "clang-format==18.1.8"
+
+      - name: Check formatting
+        run: |
+          files=$(git ls-files '*.h' '*.cpp' '*.cc' '*.hpp' \
+            | grep -E '^(bayes|state_machine)/' || true)
+          if [ -z "$files" ]; then
+            echo "No C/C++ files to check."
+            exit 0
+          fi
+          clang-format --dry-run --Werror $files

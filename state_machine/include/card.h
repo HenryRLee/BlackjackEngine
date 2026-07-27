@@ -6,9 +6,9 @@ namespace BlackjackEngine::StateMachine {
 struct Card {
   unsigned char score = 0;
 
-  explicit constexpr Card(unsigned char v) : score(v) { }
+  explicit constexpr Card(unsigned char v) : score(v) {}
 };
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine
 
-#endif // CARD_H
+#endif  // CARD_H

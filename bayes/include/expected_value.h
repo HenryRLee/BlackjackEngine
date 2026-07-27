@@ -6,19 +6,19 @@ namespace BlackjackEngine::Bayes {
 struct Probability {
   double value = 0;
 
-  explicit constexpr Probability(double v) : value(v) { }
+  explicit constexpr Probability(double v) : value(v) {}
 };
 
 struct ExpectedValue {
   double value = 0;
 
-  explicit constexpr ExpectedValue(double v) : value(v) { }
+  explicit constexpr ExpectedValue(double v) : value(v) {}
 
   bool operator<(ExpectedValue other) const {
     return this->value < other.value;
   }
 };
 
-} // namespace
+}  // namespace BlackjackEngine::Bayes
 
-#endif // EXPECTED_VALUE_H
+#endif  // EXPECTED_VALUE_H

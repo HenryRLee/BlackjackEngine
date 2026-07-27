@@ -7,6 +7,6 @@ struct RuleSet {
   bool hitOnSoft17 = false;
 };
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine
 
-#endif // RULESET_H
+#endif  // RULESET_H

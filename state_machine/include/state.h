@@ -20,11 +20,14 @@ struct State {
   Action allowedActions;
 
   constexpr State(Turn turn, PlayerHand playerHand, DealerHand dealerHand,
-                  Action allowedActions = Action::Hit | Action::Stand | Action::Double)
-      : turn(turn), playerHand(playerHand), dealerHand(dealerHand),
-        allowedActions(allowedActions) { }
+                  Action allowedActions = Action::Hit | Action::Stand |
+                                          Action::Double)
+      : turn(turn),
+        playerHand(playerHand),
+        dealerHand(dealerHand),
+        allowedActions(allowedActions) {}
 };
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine
 
-#endif // STATE_H
+#endif  // STATE_H

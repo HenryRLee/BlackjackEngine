@@ -10,11 +10,9 @@ namespace {
 bool DealerShouldHit(const RuleSet& ruleset, const State& state) {
   const DealerHand& hand = state.dealerHand;
 
-  if (hand.score < 17)
-    return true;
+  if (hand.score < 17) return true;
 
-  if (hand.score > 17)
-    return false;
+  if (hand.score > 17) return false;
 
   return hand.isSoft && ruleset.hitOnSoft17;
 }
@@ -35,21 +33,17 @@ State EnterDealer(const RuleSet& ruleset, State state) {
   return state;
 }
 
-} // namespace
+}  // namespace
 
-bool IsTerminal(const State& state) {
-  return state.turn == Turn::End;
-}
+bool IsTerminal(const State& state) { return state.turn == Turn::End; }
 
 Outcome Result(const State& state) {
   const PlayerHand& player = state.playerHand;
   const DealerHand& dealer = state.dealerHand;
 
-  if (player.score > 21)
-    return Outcome::PlayerLoses;
+  if (player.score > 21) return Outcome::PlayerLoses;
 
-  if (dealer.score > 21)
-    return Outcome::PlayerWins;
+  if (dealer.score > 21) return Outcome::PlayerWins;
 
   // Blackjacks (a two-card 21) are settled before comparing totals: two
   // blackjacks push, otherwise the side holding the blackjack wins.
@@ -57,31 +51,26 @@ Outcome Result(const State& state) {
   const bool dealerBlackjack = dealer.numCards == 2 && dealer.score == 21;
 
   if (playerBlackjack || dealerBlackjack) {
-    if (playerBlackjack && dealerBlackjack)
-      return Outcome::Push;
+    if (playerBlackjack && dealerBlackjack) return Outcome::Push;
 
     return playerBlackjack ? Outcome::PlayerWins : Outcome::PlayerLoses;
   }
 
-  if (dealer.score > player.score)
-    return Outcome::PlayerLoses;
+  if (dealer.score > player.score) return Outcome::PlayerLoses;
 
-  if (dealer.score < player.score)
-    return Outcome::PlayerWins;
+  if (dealer.score < player.score) return Outcome::PlayerWins;
 
   return Outcome::Push;
 }
 
-State InitiateState(const RuleSet& ruleset, Turn turn,
-                    PlayerHand playerHand, DealerHand dealerHand,
-                    Action allowedActions) {
+State InitiateState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
+                    DealerHand dealerHand, Action allowedActions) {
   if (turn != Turn::Player || playerHand.numCards != 2)
     allowedActions &= ~Action::Double;
 
   State state(turn, playerHand, dealerHand, allowedActions);
 
-  if (turn == Turn::Dealer)
-    return EnterDealer(ruleset, state);
+  if (turn == Turn::Dealer) return EnterDealer(ruleset, state);
 
   return state;
 }
@@ -89,8 +78,7 @@ State InitiateState(const RuleSet& ruleset, Turn turn,
 State Stand(const RuleSet& ruleset, const State& state) {
   State next = state;
 
-  if (state.turn == Turn::Player)
-    return EnterDealer(ruleset, next);
+  if (state.turn == Turn::Player) return EnterDealer(ruleset, next);
 
   next.turn = Turn::End;
   next.allowedActions = Action::None;
@@ -128,4 +116,4 @@ State Double(const State& state, Card card) {
   return next;
 }
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine

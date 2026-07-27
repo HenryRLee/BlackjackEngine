@@ -28,22 +28,24 @@ Outcome Result(const State& state);
 // Transition functions: produce the next state from the current one.
 // ---------------------------------------------------------------------------
 
-// Build a starting state. Double is stripped from the allowed actions unless the
-// double requirement is met (it is the player's turn holding exactly two cards).
-// A dealer-turn state is advanced straight to the dealer's forced state.
-State InitiateState(const RuleSet& ruleset, Turn turn,
-                    PlayerHand playerHand, DealerHand dealerHand,
-                    Action allowedActions = Action::Hit | Action::Stand | Action::Double);
+// Build a starting state. Double is stripped from the allowed actions unless
+// the double requirement is met (it is the player's turn holding exactly two
+// cards). A dealer-turn state is advanced straight to the dealer's forced
+// state.
+State InitiateState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
+                    DealerHand dealerHand,
+                    Action allowedActions = Action::Hit | Action::Stand |
+                                            Action::Double);
 
 // Stand: the acting party takes no more cards. On the player's turn play passes
 // to the dealer, who is advanced to their next forced state; on the dealer's
 // turn the round ends with no further actions.
 State Stand(const RuleSet& ruleset, const State& state);
 
-// A card is drawn for whoever is acting. On the player's turn it is added to the
-// player hand; the hand may no longer double, and a bust ends the round. On the
-// dealer's turn it is added to the dealer hand and the dealer is advanced to
-// their next forced state.
+// A card is drawn for whoever is acting. On the player's turn it is added to
+// the player hand; the hand may no longer double, and a bust ends the round. On
+// the dealer's turn it is added to the dealer hand and the dealer is advanced
+// to their next forced state.
 State Hit(const RuleSet& ruleset, const State& state, Card card);
 
 // Double: a single card is drawn, after which the acting party may only stand;
@@ -51,6 +53,6 @@ State Hit(const RuleSet& ruleset, const State& state, Card card);
 // allowed to double.
 State Double(const State& state, Card card);
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine
 
-#endif // STATE_MACHINE_H
+#endif  // STATE_MACHINE_H

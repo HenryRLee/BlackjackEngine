@@ -1,0 +1,53 @@
+name: lint suggest
+
+# On pull requests, runs clang-format over the changed C/C++ files and posts the
+# required formatting fixes as inline review suggestions via reviewdog. This is
+# suggestion-only; the lint workflow is the blocking gate.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install clang-format
+        run: pip install "clang-format==18.1.8"
+
+      - name: Collect changed C/C++ files
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          files=$(git diff --name-only --diff-filter=ACMR "$base" HEAD \
+            | grep -E '\.(c|cc|cpp|cxx|h|hh|hpp)$' \
+            | grep -E '^(bayes|state_machine)/' \
+            | tr '\n' ' ' || true)
+          echo "files=$files" >> "$GITHUB_OUTPUT"
+
+      - name: Run clang-format
+        if: steps.changed.outputs.files != ''
+        run: clang-format -i ${{ steps.changed.outputs.files }}
+
+      - name: Suggest changes
+        if: steps.changed.outputs.files != ''
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: clang-format
+          level: warning
+          fail_level: none
+          cleanup: "false"
