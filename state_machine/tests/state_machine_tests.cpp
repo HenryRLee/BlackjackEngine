@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "state_machine.h"
 
-using namespace BlackjackEngine;
+using namespace BlackjackEngine::StateMachine;
 
 namespace {
 
@@ -80,27 +80,34 @@ TEST(StateMachineTests, DoubleAddsCardAndLeavesOnlyStand) {
 }
 
 TEST(StateMachineTests, DealerHitsBelow17) {
-  EXPECT_TRUE(DealerShouldHit(RuleSet(), DealerTurn(PlayerHand(18, false, 2), DealerHand(16, false, 2))));
+  const State state = InitiateState(RuleSet(), Turn::Dealer, PlayerHand(18, false, 2), DealerHand(16, false, 2));
+  EXPECT_FALSE(IsTerminal(state));
+  EXPECT_TRUE(IsAllowed(state.allowedActions, Action::Hit));
 }
 
 TEST(StateMachineTests, DealerStandsOnHard17) {
-  EXPECT_FALSE(DealerShouldHit(RuleSet(), DealerTurn(PlayerHand(18, false, 2), DealerHand(17, false, 2))));
+  const State state = InitiateState(RuleSet(), Turn::Dealer, PlayerHand(18, false, 2), DealerHand(17, false, 2));
+  EXPECT_TRUE(IsTerminal(state));
 }
 
 TEST(StateMachineTests, DealerStandsAbove17) {
-  EXPECT_FALSE(DealerShouldHit(RuleSet(), DealerTurn(PlayerHand(18, false, 2), DealerHand(19, false, 2))));
+  const State state = InitiateState(RuleSet(), Turn::Dealer, PlayerHand(18, false, 2), DealerHand(19, false, 2));
+  EXPECT_TRUE(IsTerminal(state));
 }
 
 TEST(StateMachineTests, DealerStandsOnSoft17WhenRuleOff) {
   RuleSet ruleset;
   ruleset.hitOnSoft17 = false;
-  EXPECT_FALSE(DealerShouldHit(ruleset, DealerTurn(PlayerHand(18, false, 2), DealerHand(17, true, 2))));
+  const State state = InitiateState(ruleset, Turn::Dealer, PlayerHand(18, false, 2), DealerHand(17, true, 2));
+  EXPECT_TRUE(IsTerminal(state));
 }
 
 TEST(StateMachineTests, DealerHitsOnSoft17WhenRuleOn) {
   RuleSet ruleset;
   ruleset.hitOnSoft17 = true;
-  EXPECT_TRUE(DealerShouldHit(ruleset, DealerTurn(PlayerHand(18, false, 2), DealerHand(17, true, 2))));
+  const State state = InitiateState(ruleset, Turn::Dealer, PlayerHand(18, false, 2), DealerHand(17, true, 2));
+  EXPECT_FALSE(IsTerminal(state));
+  EXPECT_TRUE(IsAllowed(state.allowedActions, Action::Hit));
 }
 
 TEST(StateMachineTests, HitAddsToDealerOnDealerTurn) {

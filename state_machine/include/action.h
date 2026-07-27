@@ -1,7 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-namespace BlackjackEngine {
+namespace BlackjackEngine::StateMachine {
 
 // The set of actions available to whoever is acting, stored as a bit mask.
 // For the player this is a subset of {Hit, Stand, Double}; for the dealer it is
@@ -43,6 +43,6 @@ constexpr bool IsAllowed(Action set, Action action) {
   return (set & action) == action;
 }
 
-} // namespace BlackjackEngine
+} // namespace BlackjackEngine::StateMachine
 
 #endif // ACTION_H

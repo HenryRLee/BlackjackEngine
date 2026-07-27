@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "bayes.h"
 
-using namespace BlackjackEngine;
+using namespace BlackjackEngine::StateMachine;
 using namespace BlackjackEngine::Bayes;
 
 constexpr double Epsilon = 0.000001;

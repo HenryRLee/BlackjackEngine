@@ -1,12 +1,12 @@
 #ifndef RULESET_H
 #define RULESET_H
 
-namespace BlackjackEngine {
+namespace BlackjackEngine::StateMachine {
 
 struct RuleSet {
   bool hitOnSoft17 = false;
 };
 
-} // namespace
+} // namespace BlackjackEngine::StateMachine
 
 #endif // RULESET_H

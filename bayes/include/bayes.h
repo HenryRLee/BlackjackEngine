@@ -6,6 +6,10 @@
 
 namespace BlackjackEngine::Bayes {
 
+using StateMachine::DealerHand;
+using StateMachine::PlayerHand;
+using StateMachine::RuleSet;
+
 ExpectedValue EvPlayerBestAction(const RuleSet& ruleset,
                                  PlayerHand playerHand, DealerHand dealerHand);
 

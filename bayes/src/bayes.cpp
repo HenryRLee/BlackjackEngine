@@ -7,6 +7,8 @@
 #include <numeric>
 #include <ranges>
 
+using namespace BlackjackEngine::StateMachine;
+
 namespace BlackjackEngine::Bayes {
 
 constexpr std::array<Card, 10> AllCards() {

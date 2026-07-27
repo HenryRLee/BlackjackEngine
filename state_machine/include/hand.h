@@ -3,7 +3,7 @@
 
 #include "card.h"
 
-namespace BlackjackEngine {
+namespace BlackjackEngine::StateMachine {
 
 struct Hand {
   unsigned char score = 0;
@@ -59,6 +59,6 @@ struct PlayerHand : public Hand {
       : Hand(v, soft, cards) { }
 };
 
-} // namespace BlackjackEngine
+} // namespace BlackjackEngine::StateMachine
 
 #endif // HAND_H

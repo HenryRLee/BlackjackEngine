@@ -4,7 +4,7 @@
 #include "action.h"
 #include "hand.h"
 
-namespace BlackjackEngine {
+namespace BlackjackEngine::StateMachine {
 
 // Whose turn it is to act, or that the round has finished.
 enum class Turn : unsigned char {
@@ -25,6 +25,6 @@ struct State {
         allowedActions(allowedActions) { }
 };
 
-} // namespace BlackjackEngine
+} // namespace BlackjackEngine::StateMachine
 
 #endif // STATE_H
