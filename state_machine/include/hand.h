@@ -10,20 +10,20 @@ struct Hand {
   bool isSoft = false;
   unsigned char numCards = 0;
 
-  explicit constexpr Hand(unsigned char v) : score(v), numCards(1) { }
-  constexpr Hand(unsigned char v, bool soft) : score(v), isSoft(soft), numCards(1) { }
+  explicit constexpr Hand(unsigned char v) : score(v), numCards(1) {}
+  constexpr Hand(unsigned char v, bool soft)
+      : score(v), isSoft(soft), numCards(1) {}
   constexpr Hand(unsigned char v, bool soft, unsigned char cards)
-      : score(v), isSoft(soft), numCards(cards) { }
+      : score(v), isSoft(soft), numCards(cards) {}
 
   constexpr Hand& operator+=(Card card) {
-	score = score + card.score;
+    score = score + card.score;
     ++numCards;
 
     if (score > 21) {
       if (card.score == 11) {
         score -= 10;
-      }
-      else if (isSoft) {
+      } else if (isSoft) {
         score -= 10;
         isSoft = false;
       }
@@ -31,7 +31,7 @@ struct Hand {
       isSoft = true;
     }
 
-	return *this;
+    return *this;
   }
 
   constexpr Hand operator+(Card card) const {
@@ -43,22 +43,22 @@ struct Hand {
 
 struct DealerHand : public Hand {
   constexpr DealerHand(const DealerHand& hand) = default;
-  constexpr DealerHand(const Hand& hand) : Hand(hand) { }
-  explicit constexpr DealerHand(unsigned char v) : Hand(v) { }
-  constexpr DealerHand(unsigned char v, bool soft) : Hand(v, soft) { }
+  constexpr DealerHand(const Hand& hand) : Hand(hand) {}
+  explicit constexpr DealerHand(unsigned char v) : Hand(v) {}
+  constexpr DealerHand(unsigned char v, bool soft) : Hand(v, soft) {}
   constexpr DealerHand(unsigned char v, bool soft, unsigned char cards)
-      : Hand(v, soft, cards) { }
+      : Hand(v, soft, cards) {}
 };
 
 struct PlayerHand : public Hand {
   constexpr PlayerHand(const PlayerHand& hand) = default;
-  constexpr PlayerHand(const Hand& hand) : Hand(hand) { }
-  explicit constexpr PlayerHand(unsigned char v) : Hand(v) { }
-  constexpr PlayerHand(unsigned char v, bool soft) : Hand(v, soft) { }
+  constexpr PlayerHand(const Hand& hand) : Hand(hand) {}
+  explicit constexpr PlayerHand(unsigned char v) : Hand(v) {}
+  constexpr PlayerHand(unsigned char v, bool soft) : Hand(v, soft) {}
   constexpr PlayerHand(unsigned char v, bool soft, unsigned char cards)
-      : Hand(v, soft, cards) { }
+      : Hand(v, soft, cards) {}
 };
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine
 
-#endif // HAND_H
+#endif  // HAND_H

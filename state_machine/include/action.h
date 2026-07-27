@@ -8,9 +8,9 @@ namespace BlackjackEngine::StateMachine {
 // the single action the ruleset forces (Hit or Stand); for a finished round it
 // is None.
 enum class Action : unsigned char {
-  None   = 0,
-  Hit    = 1u << 0,
-  Stand  = 1u << 1,
+  None = 0,
+  Hit = 1u << 0,
+  Stand = 1u << 1,
   Double = 1u << 2,
 };
 
@@ -43,6 +43,6 @@ constexpr bool IsAllowed(Action set, Action action) {
   return (set & action) == action;
 }
 
-} // namespace BlackjackEngine::StateMachine
+}  // namespace BlackjackEngine::StateMachine
 
-#endif // ACTION_H
+#endif  // ACTION_H

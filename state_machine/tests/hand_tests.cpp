@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+
 #include "hand.h"
 
 using namespace BlackjackEngine::StateMachine;
@@ -129,12 +130,10 @@ TEST(HandTests, TestSoftHandAddCard) {
     EXPECT_EQ(hand.isSoft, true);
   }
 
-
   {
     Hand hand(20, true);
     hand += Card(11);
     EXPECT_EQ(hand.score, 21);
     EXPECT_EQ(hand.isSoft, true);
   }
-
 }
