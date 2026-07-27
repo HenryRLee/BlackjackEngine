@@ -3,17 +3,21 @@
 
 #include "card.h"
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::StateMachine {
 
 struct Hand {
   unsigned char score = 0;
   bool isSoft = false;
+  unsigned char numCards = 0;
 
-  explicit constexpr Hand(unsigned char v) : score(v) { }
-  constexpr Hand(unsigned char v, bool soft) : score(v), isSoft(soft) { }
+  explicit constexpr Hand(unsigned char v) : score(v), numCards(1) { }
+  constexpr Hand(unsigned char v, bool soft) : score(v), isSoft(soft), numCards(1) { }
+  constexpr Hand(unsigned char v, bool soft, unsigned char cards)
+      : score(v), isSoft(soft), numCards(cards) { }
 
   constexpr Hand& operator+=(Card card) {
 	score = score + card.score;
+    ++numCards;
 
     if (score > 21) {
       if (card.score == 11) {
@@ -42,6 +46,8 @@ struct DealerHand : public Hand {
   constexpr DealerHand(const Hand& hand) : Hand(hand) { }
   explicit constexpr DealerHand(unsigned char v) : Hand(v) { }
   constexpr DealerHand(unsigned char v, bool soft) : Hand(v, soft) { }
+  constexpr DealerHand(unsigned char v, bool soft, unsigned char cards)
+      : Hand(v, soft, cards) { }
 };
 
 struct PlayerHand : public Hand {
@@ -49,8 +55,10 @@ struct PlayerHand : public Hand {
   constexpr PlayerHand(const Hand& hand) : Hand(hand) { }
   explicit constexpr PlayerHand(unsigned char v) : Hand(v) { }
   constexpr PlayerHand(unsigned char v, bool soft) : Hand(v, soft) { }
+  constexpr PlayerHand(unsigned char v, bool soft, unsigned char cards)
+      : Hand(v, soft, cards) { }
 };
 
-} // namespace BlackjackBayes
+} // namespace BlackjackEngine::StateMachine
 
 #endif // HAND_H

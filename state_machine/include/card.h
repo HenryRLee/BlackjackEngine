@@ -1,7 +1,7 @@
 #ifndef CARD_H
 #define CARD_H
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::StateMachine {
 
 struct Card {
   unsigned char score = 0;
@@ -9,6 +9,6 @@ struct Card {
   explicit constexpr Card(unsigned char v) : score(v) { }
 };
 
-} // namespace
+} // namespace BlackjackEngine::StateMachine
 
 #endif // CARD_H

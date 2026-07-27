@@ -1,22 +1,10 @@
-# Set minimum required CMake version
-cmake_minimum_required(VERSION 3.10)
-
-# Define project name
-project(BlackjackBayes CXX)
-
-set(CMAKE_CXX_STANDARD 20)
-
-# Add a library target
+# The Bayes expected-value library, built on top of the state machine.
 add_library(blackjack_bayes src/bayes.cpp)
 
 target_include_directories(blackjack_bayes PUBLIC include)
 
-# Add an executable target
-# add_executable(main src/main.c)
-
-option(BUILD_TESTS "Enable building tests" ON)
+target_link_libraries(blackjack_bayes PUBLIC blackjack_state_machine)
 
 if(BUILD_TESTS)
   add_subdirectory(tests)
 endif()
-

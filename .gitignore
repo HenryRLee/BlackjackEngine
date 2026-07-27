@@ -1,1 +1,5 @@
+# CMake
+build/
+
+# Vim swap files
 .*.swp

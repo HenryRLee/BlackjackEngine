@@ -1,13 +1,12 @@
 #ifndef RULESET_H
 #define RULESET_H
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::StateMachine {
 
 struct RuleSet {
   bool hitOnSoft17 = false;
-  unsigned char numberOfDecks = 1;
 };
 
-} // namespace
+} // namespace BlackjackEngine::StateMachine
 
 #endif // RULESET_H

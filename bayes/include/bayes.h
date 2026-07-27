@@ -4,10 +4,14 @@
 
 #include <utility>
 
-namespace BlackjackBayes {
+namespace BlackjackEngine::Bayes {
 
-ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
-                                   PlayerHand playerHand, DealerHand dealerHand);
+using StateMachine::DealerHand;
+using StateMachine::PlayerHand;
+using StateMachine::RuleSet;
+
+ExpectedValue EvPlayerBestAction(const RuleSet& ruleset,
+                                 PlayerHand playerHand, DealerHand dealerHand);
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset,
                              PlayerHand playerHand, DealerHand dealerHand);
@@ -18,4 +22,4 @@ ExpectedValue EvPlayerHits(const RuleSet& ruleset,
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
                               PlayerHand playerHand, DealerHand dealerHand);
 
-} // namespace BlackjackBayes
+} // namespace BlackjackEngine::Bayes

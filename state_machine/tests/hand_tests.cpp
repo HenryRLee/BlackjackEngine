@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "hand.h"
 
-using namespace BlackjackBayes;
+using namespace BlackjackEngine::StateMachine;
 
 TEST(HandTests, TestBasicAddCard) {
   {
