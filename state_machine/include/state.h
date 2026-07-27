@@ -1,6 +1,7 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include "action.h"
 #include "hand.h"
 
 namespace BlackjackEngine {
@@ -16,9 +17,12 @@ struct State {
   Turn turn = Turn::Player;
   PlayerHand playerHand;
   DealerHand dealerHand;
+  Action allowedActions;
 
-  constexpr State(Turn turn, PlayerHand playerHand, DealerHand dealerHand)
-      : turn(turn), playerHand(playerHand), dealerHand(dealerHand) { }
+  constexpr State(Turn turn, PlayerHand playerHand, DealerHand dealerHand,
+                  Action allowedActions = Action::Hit | Action::Stand | Action::Double)
+      : turn(turn), playerHand(playerHand), dealerHand(dealerHand),
+        allowedActions(allowedActions) { }
 };
 
 } // namespace BlackjackEngine

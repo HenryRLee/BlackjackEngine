@@ -6,8 +6,8 @@
 
 namespace BlackjackEngine::Bayes {
 
-ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
-                                   PlayerHand playerHand, DealerHand dealerHand);
+ExpectedValue EvPlayerBestAction(const RuleSet& ruleset,
+                                 PlayerHand playerHand, DealerHand dealerHand);
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset,
                              PlayerHand playerHand, DealerHand dealerHand);

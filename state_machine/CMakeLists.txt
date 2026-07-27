@@ -6,10 +6,10 @@ project(BlackjackStateMachine CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# Add a library target
-add_library(blackjack_state_machine src/state_machine.cpp)
+# Header-only library target
+add_library(blackjack_state_machine INTERFACE)
 
-target_include_directories(blackjack_state_machine PUBLIC include)
+target_include_directories(blackjack_state_machine INTERFACE include)
 
 option(BUILD_TESTS "Enable building tests" ON)
 

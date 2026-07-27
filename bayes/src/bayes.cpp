@@ -1,20 +1,13 @@
 #include "bayes.h"
+#include "state_machine.h"
 #include <algorithm>
 #include <array>
+#include <cassert>
+#include <limits>
 #include <numeric>
 #include <ranges>
 
 namespace BlackjackEngine::Bayes {
-
-constexpr bool HitFromDealer(const RuleSet& ruleset, DealerHand hand) {
-  if (hand.score < 17)
-    return true;
-
-  if (hand.score > 17)
-    return false;
-
-  return hand.isSoft && ruleset.hitOnSoft17;
-}
 
 constexpr std::array<Card, 10> AllCards() {
   return {
@@ -38,97 +31,85 @@ constexpr Probability ProbOfGettingOneCard(Card card) {
     return Probability(double(1) / 13);
 }
 
-ExpectedValue EvDealerRemainingRounds(const RuleSet& ruleset,
-                                      PlayerHand playerHand, DealerHand dealerHand) {
-  if (HitFromDealer(ruleset, dealerHand)) {
-    auto allCards = std::views::all(AllCards());
-    return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-        [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
-          const DealerHand newDealerHand = dealerHand + card;
-          return ExpectedValue(current.value +
-              ProbOfGettingOneCard(card).value *
-              EvDealerRemainingRounds(ruleset, playerHand, newDealerHand).value);
-        });
-  } else {
-    if (dealerHand.score > 21)
-      return ExpectedValue(1.0);
-
-    if (dealerHand.score > playerHand.score)
-      return ExpectedValue(-1.0);
-    else if (dealerHand.score < playerHand.score)
-      return ExpectedValue(1.0);
-    else
-      return ExpectedValue(0.0);
-  }
+constexpr ExpectedValue OutcomeValue(Outcome outcome) {
+  return ExpectedValue(static_cast<double>(static_cast<signed char>(outcome)));
 }
 
-ExpectedValue EvDealerFirstRound(const RuleSet& ruleset,
-                                 PlayerHand playerHand, DealerHand dealerHand) {
-  /*
-   * We need to deal with the special case that dealer draws a Blackjack.
-   * At this point, we assume the player doesn't have a Blackjack.
-   * And the dealer should have only one card in his hand at the moment.
-   * If the dealer card is not an Ace or anything value at 10, we can run the normal evaluation
-   *   with EvDealerRemainingRounds.
-   */
-  if (dealerHand.score != 10 && dealerHand.score != 11)
-    return EvDealerRemainingRounds(ruleset, playerHand, dealerHand);
+// The value of playing a state optimally.
+ExpectedValue EvBest(const RuleSet& ruleset, const State& state);
 
+// EV of hitting: draw a card, then play the resulting state optimally.
+ExpectedValue EvHits(const RuleSet& ruleset, const State& state) {
   auto allCards = std::views::all(AllCards());
   return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-      [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
-        const DealerHand newDealerHand = dealerHand + card;
-        // Only two cards so far, this must be a Blackjack
-        // The dealer wins regardless of the player score
-        if (newDealerHand.score == 21) {
-          return ExpectedValue(current.value +
-              ProbOfGettingOneCard(card).value * -1.0);
-        }
-
+      [&ruleset, state] (ExpectedValue current, Card card) {
         return ExpectedValue(current.value +
             ProbOfGettingOneCard(card).value *
-            EvDealerRemainingRounds(ruleset, playerHand, newDealerHand).value);
+            EvBest(ruleset, Hit(ruleset, state, card)).value);
       });
-
 }
 
-ExpectedValue EvPlayerHitsOrStands(const RuleSet& ruleset,
-                                   PlayerHand playerHand, DealerHand dealerHand) {
-  if (playerHand.score > 21)
-    return ExpectedValue(-1.0);
+// EV of standing: hand play over to the next state and play it optimally.
+ExpectedValue EvStands(const RuleSet& ruleset, const State& state) {
+  return EvBest(ruleset, Stand(ruleset, state));
+}
 
-  const ExpectedValue evHit = EvPlayerHits(ruleset, playerHand, dealerHand);
-  const ExpectedValue evStand = EvPlayerStands(ruleset, playerHand, dealerHand);
+// EV of doubling: draw a single card for twice the stake, then play the
+// resulting state optimally (only standing remains).
+ExpectedValue EvDoubles(const RuleSet& ruleset, const State& state) {
+  auto allCards = std::views::all(AllCards());
+  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
+      [&ruleset, state] (ExpectedValue current, Card card) {
+        return ExpectedValue(current.value +
+            2.0 * ProbOfGettingOneCard(card).value *
+            EvBest(ruleset, Double(state, card)).value);
+      });
+}
 
-  return std::max(evHit, evStand);
+// Value of playing a state optimally: a terminal state is simply scored,
+// otherwise it is the greatest expected value over every allowed action. This
+// drives both the player's choices and the dealer's forced play, since a
+// dealer-turn state only ever allows Hit.
+ExpectedValue EvBest(const RuleSet& ruleset, const State& state) {
+  if (IsTerminal(state))
+    return OutcomeValue(Result(state));
+
+  // A non-terminal state must offer at least one action, otherwise the fallback
+  // below would return negative infinity.
+  assert(state.allowedActions != Action::None);
+
+  ExpectedValue best(-std::numeric_limits<double>::infinity());
+
+  if (IsAllowed(state.allowedActions, Action::Hit))
+    best = std::max(best, EvHits(ruleset, state));
+
+  if (IsAllowed(state.allowedActions, Action::Stand))
+    best = std::max(best, EvStands(ruleset, state));
+
+  if (IsAllowed(state.allowedActions, Action::Double))
+    best = std::max(best, EvDoubles(ruleset, state));
+
+  return best;
+}
+
+ExpectedValue EvPlayerBestAction(const RuleSet& ruleset,
+                                 PlayerHand playerHand, DealerHand dealerHand) {
+  return EvBest(ruleset, InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset,
                              PlayerHand playerHand, DealerHand dealerHand) {
-  return EvDealerFirstRound(ruleset, playerHand, dealerHand);
+  return EvStands(ruleset, InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerHits(const RuleSet& ruleset,
                            PlayerHand playerHand, DealerHand dealerHand) {
-  auto allCards = std::views::all(AllCards());
-  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-      [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
-        const PlayerHand newPlayerHand = playerHand + card;
-        return ExpectedValue(current.value +
-            ProbOfGettingOneCard(card).value *
-            EvPlayerHitsOrStands(ruleset, newPlayerHand, dealerHand).value);
-      });
+  return EvHits(ruleset, InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset,
                               PlayerHand playerHand, DealerHand dealerHand) {
-  auto allCards = std::views::all(AllCards());
-  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
-      [&ruleset, playerHand, dealerHand] (ExpectedValue current, Card card) {
-        const DealerHand newPlayerHand = playerHand + card;
-        return ExpectedValue(current.value +
-            2.0 * ProbOfGettingOneCard(card).value * EvPlayerStands(ruleset, newPlayerHand, dealerHand).value);
-      });
+  return EvDoubles(ruleset, InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 } // namespace BlackjackEngine::Bayes
