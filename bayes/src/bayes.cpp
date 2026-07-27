@@ -43,7 +43,7 @@ ExpectedValue EvBest(const RuleSet& ruleset, const State& state);
 // EV of hitting: draw a card, then play the resulting state optimally.
 ExpectedValue EvHits(const RuleSet& ruleset, const State& state) {
   auto allCards = std::views::all(AllCards());
-  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
+  return std::accumulate(allCards.begin(), allCards.end(), ExpectedValue(0.0),
       [&ruleset, state] (ExpectedValue current, Card card) {
         return ExpectedValue(current.value +
             ProbOfGettingOneCard(card).value *
@@ -60,7 +60,7 @@ ExpectedValue EvStands(const RuleSet& ruleset, const State& state) {
 // resulting state optimally (only standing remains).
 ExpectedValue EvDoubles(const RuleSet& ruleset, const State& state) {
   auto allCards = std::views::all(AllCards());
-  return std::reduce(allCards.begin(), allCards.end(), ExpectedValue(0.0),
+  return std::accumulate(allCards.begin(), allCards.end(), ExpectedValue(0.0),
       [&ruleset, state] (ExpectedValue current, Card card) {
         return ExpectedValue(current.value +
             2.0 * ProbOfGettingOneCard(card).value *
