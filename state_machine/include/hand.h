@@ -44,14 +44,16 @@ struct Hand {
 struct DealerHand : public Hand {
   constexpr DealerHand(const DealerHand& hand) = default;
   constexpr DealerHand(const Hand& hand) : Hand(hand) {}
-  explicit constexpr DealerHand(unsigned char v, bool soft = false, unsigned char cards = 1)
+  explicit constexpr DealerHand(unsigned char v, bool soft = false,
+                                unsigned char cards = 1)
       : Hand(v, soft, cards) {}
 };
 
 struct PlayerHand : public Hand {
   constexpr PlayerHand(const PlayerHand& hand) = default;
   constexpr PlayerHand(const Hand& hand) : Hand(hand) {}
-  explicit constexpr PlayerHand(unsigned char v, bool soft = false, unsigned char cards = 2)
+  explicit constexpr PlayerHand(unsigned char v, bool soft = false,
+                                unsigned char cards = 2)
       : Hand(v, soft, cards) {}
 };
 

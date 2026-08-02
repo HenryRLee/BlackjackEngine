@@ -68,7 +68,8 @@ ExpectedValue EvDoubles(const RuleSet& ruleset, const State& state) {
 // EV of splitting: split the hand into two and evaluate both
 ExpectedValue EvSplits(const RuleSet& ruleset, const State& state) {
   const auto& [first, second] = Split(ruleset, state);
-  return ExpectedValue(EvBest(ruleset, first).value + EvBest(ruleset, second).value);
+  return ExpectedValue(EvBest(ruleset, first).value +
+                       EvBest(ruleset, second).value);
 }
 
 // Value of playing a state optimally: a terminal state is simply scored,
@@ -107,8 +108,8 @@ ExpectedValue EvPlayerBestAction(const RuleSet& ruleset, PlayerHand playerHand,
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset, PlayerHand playerHand,
                              DealerHand dealerHand) {
-  return EvStands(ruleset,
-                  InitializeState(ruleset, Turn::Player, playerHand, dealerHand));
+  return EvStands(
+      ruleset, InitializeState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerHits(const RuleSet& ruleset, PlayerHand playerHand,
@@ -125,10 +126,10 @@ ExpectedValue EvPlayerDoubles(const RuleSet& ruleset, PlayerHand playerHand,
 
 ExpectedValue EvPlayerSplits(const RuleSet& ruleset, PlayerHand playerHand,
                              DealerHand dealerHand) {
-  return EvSplits(
-      ruleset,
-      InitializeState(ruleset, Turn::Player, playerHand, dealerHand,
-                      Action::Hit | Action::Stand | Action::Double | Action::Split));
+  return EvSplits(ruleset,
+                  InitializeState(ruleset, Turn::Player, playerHand, dealerHand,
+                                  Action::Hit | Action::Stand | Action::Double |
+                                      Action::Split));
 }
 
 }  // namespace BlackjackEngine::Bayes

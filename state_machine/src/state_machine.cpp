@@ -51,9 +51,9 @@ State EnterPlayer(const RuleSet& ruleset, const State& state) {
         actions |= Action::Double;
       }
 
-      // Re-enable Split only when the drawn card matches the original split card.
-      // For non-aces: hand score == splitCardScore * 2.
-      // For aces (splitCardScore == 11): hand is soft 12 (11 + 11 wraps).
+      // Re-enable Split only when the drawn card matches the original split
+      // card. For non-aces: hand score == splitCardScore * 2. For aces
+      // (splitCardScore == 11): hand is soft 12 (11 + 11 wraps).
       bool drawnCardMatchesSplit =
           state.splitCardScore > 0 &&
           (state.playerHand.score == state.splitCardScore * 2 ||
@@ -110,7 +110,8 @@ Outcome Result(const State& state) {
 
   // Blackjacks (a two-card 21) are settled before comparing totals: two
   // blackjacks push, otherwise the side holding the blackjack wins.
-  const bool playerBlackjack = player.numCards == 2 && player.score == 21 && state.splitDepth == 0;
+  const bool playerBlackjack =
+      player.numCards == 2 && player.score == 21 && state.splitDepth == 0;
   const bool dealerBlackjack = dealer.numCards == 2 && dealer.score == 21;
 
   if (playerBlackjack || dealerBlackjack) {
@@ -127,7 +128,7 @@ Outcome Result(const State& state) {
 }
 
 State InitializeState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
-                    DealerHand dealerHand, Action allowedActions) {
+                      DealerHand dealerHand, Action allowedActions) {
   const State state(turn, playerHand, dealerHand, allowedActions);
 
   if (turn == Turn::Player)

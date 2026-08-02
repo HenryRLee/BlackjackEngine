@@ -8,12 +8,12 @@ using namespace BlackjackEngine::Bayes;
 constexpr double Epsilon = 0.000001;
 
 const RuleSet macauRule = {
-  .hitOnSoft17 = false,
-  .maxSplittedHands = 4,
-  .resplitAces = false,
-  .splitLosesOriginalToDealerBJ = false,
-  .doubleLosesOriginalToDealerBJ = true,
-  .doubleOnSplits = true,
+    .hitOnSoft17 = false,
+    .maxSplittedHands = 4,
+    .resplitAces = false,
+    .splitLosesOriginalToDealerBJ = false,
+    .doubleLosesOriginalToDealerBJ = true,
+    .doubleOnSplits = true,
 };
 
 TEST(EvTests, TestPlayer16Dealer9Hit) {

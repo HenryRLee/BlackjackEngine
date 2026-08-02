@@ -1,11 +1,11 @@
 #ifndef STATE_MACHINE_H
 #define STATE_MACHINE_H
 
+#include <utility>
+
 #include "card.h"
 #include "ruleset.h"
 #include "state.h"
-
-#include <utility>
 
 namespace BlackjackEngine::StateMachine {
 
