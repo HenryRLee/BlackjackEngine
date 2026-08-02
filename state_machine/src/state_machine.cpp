@@ -17,11 +17,74 @@ bool DealerShouldHit(const RuleSet& ruleset, const State& state) {
   return hand.isSoft && ruleset.hitOnSoft17;
 }
 
+// Advance a state by recalculate the allowed actions for player.
+// Used internally by Hit and Split. Double doesn't need to come here
+// since Stand is the only allowed action after doubling.
+State EnterPlayer(const RuleSet& ruleset, const State& state) {
+  assert(state.turn == Turn::Player);
+
+  Action actions = state.allowedActions;
+
+  if (state.playerHand.numCards < 2) {
+    actions &= ~Action::Stand;
+    actions |= Action::Hit;
+
+  } else {
+    actions |= Action::Stand;
+  }
+
+  if (state.playerHand.numCards != 2) {
+    actions &= ~(Action::Double | Action::Split);
+  } else {
+    // Stand on split aces
+    if (state.splitCardScore == 11 && ruleset.standOnSplitAces) {
+      actions &= ~(Action::Hit | Action::Double | Action::Split);
+
+      // Still allow re-split if aces are drawn and resplitAces is enabled.
+      if (ruleset.resplitAces && state.splitDepth < ruleset.maxSplittedHands &&
+          state.playerHand.score == 12 && state.playerHand.isSoft) {
+        actions |= Action::Split;
+      }
+    } else {
+      // Re-enable Double for split hands that just received their second card.
+      if (state.splitDepth > 0 && ruleset.doubleOnSplits) {
+        actions |= Action::Double;
+      }
+
+      // Re-enable Split only when the drawn card matches the original split card.
+      // For non-aces: hand score == splitCardScore * 2.
+      // For aces (splitCardScore == 11): hand is soft 12 (11 + 11 wraps).
+      bool drawnCardMatchesSplit =
+          state.splitCardScore > 0 &&
+          (state.playerHand.score == state.splitCardScore * 2 ||
+           (state.splitCardScore == 11 && ruleset.resplitAces &&
+            state.playerHand.score == 12 && state.playerHand.isSoft));
+      if (state.splitDepth > 0 && state.splitDepth < ruleset.maxSplittedHands &&
+          drawnCardMatchesSplit) {
+        actions |= Action::Split;
+      }
+
+      if (state.playerHand.score % 2 != 0) {
+        actions &= ~Action::Split;
+      } else if (state.playerHand.isSoft && state.playerHand.score != 12) {
+        actions &= ~Action::Split;
+      }
+    }
+  }
+
+  State next = state;
+  next.allowedActions = actions;
+
+  return next;
+}
+
 // Advance a state into the dealer's turn: the dealer keeps hitting while the
 // ruleset requires it, so a dealer-turn state always has Hit as its only
 // allowed action. Once the dealer must stand, the round is finished. Used
-// internally by Stand, Hit, and InitiateState.
+// internally by Stand, Hit, and InitializeState.
 State EnterDealer(const RuleSet& ruleset, State state) {
+  assert(state.turn <= Turn::Dealer);
+
   if (DealerShouldHit(ruleset, state)) {
     state.turn = Turn::Dealer;
     state.allowedActions = Action::Hit;
@@ -47,7 +110,7 @@ Outcome Result(const State& state) {
 
   // Blackjacks (a two-card 21) are settled before comparing totals: two
   // blackjacks push, otherwise the side holding the blackjack wins.
-  const bool playerBlackjack = player.numCards == 2 && player.score == 21;
+  const bool playerBlackjack = player.numCards == 2 && player.score == 21 && state.splitDepth == 0;
   const bool dealerBlackjack = dealer.numCards == 2 && dealer.score == 21;
 
   if (playerBlackjack || dealerBlackjack) {
@@ -63,16 +126,14 @@ Outcome Result(const State& state) {
   return Outcome::Push;
 }
 
-State InitiateState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
+State InitializeState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
                     DealerHand dealerHand, Action allowedActions) {
-  if (turn != Turn::Player || playerHand.numCards != 2)
-    allowedActions &= ~Action::Double;
+  const State state(turn, playerHand, dealerHand, allowedActions);
 
-  State state(turn, playerHand, dealerHand, allowedActions);
-
-  if (turn == Turn::Dealer) return EnterDealer(ruleset, state);
-
-  return state;
+  if (turn == Turn::Player)
+    return EnterPlayer(ruleset, state);
+  else
+    return EnterDealer(ruleset, state);
 }
 
 State Stand(const RuleSet& ruleset, const State& state) {
@@ -96,14 +157,15 @@ State Hit(const RuleSet& ruleset, const State& state, Card card) {
   }
 
   next.playerHand = next.playerHand + card;
-  next.allowedActions &= ~Action::Double;
 
   if (next.playerHand.score > 21) {
     next.turn = Turn::End;
     next.allowedActions = Action::None;
-  }
 
-  return next;
+    return next;
+  } else {
+    return EnterPlayer(ruleset, next);
+  }
 }
 
 State Double(const State& state, Card card) {
@@ -112,8 +174,37 @@ State Double(const State& state, Card card) {
 
   State next = state;
   next.playerHand = next.playerHand + card;
-  next.allowedActions &= ~(Action::Hit | Action::Double);
+  next.allowedActions &= ~(Action::Hit | Action::Double | Action::Split);
   return next;
+}
+
+std::pair<State, State> Split(const RuleSet& ruleset, const State& state) {
+  assert(state.turn == Turn::Player);
+  assert(IsAllowed(state.allowedActions, Action::Split));
+  assert(state.playerHand.numCards == 2);
+  assert(state.playerHand.score % 2 == 0);
+  assert(!state.playerHand.isSoft || state.playerHand.score == 12);
+
+  State first = state;
+
+  if (state.playerHand.score == 12 && state.playerHand.isSoft) {
+    // two aces
+    first.playerHand.score = 11;
+
+    if (!ruleset.resplitAces) {
+      first.allowedActions &= ~Action::Split;
+    }
+  } else {
+    first.playerHand.score = state.playerHand.score / 2;
+  }
+
+  first.playerHand.numCards = 1;
+  first.splitDepth = state.splitDepth + 1;
+  first.splitCardScore = first.playerHand.score;
+
+  State second = first;
+
+  return {EnterPlayer(ruleset, first), EnterPlayer(ruleset, second)};
 }
 
 }  // namespace BlackjackEngine::StateMachine

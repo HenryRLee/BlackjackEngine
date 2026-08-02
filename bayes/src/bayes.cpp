@@ -65,6 +65,12 @@ ExpectedValue EvDoubles(const RuleSet& ruleset, const State& state) {
       });
 }
 
+// EV of splitting: split the hand into two and evaluate both
+ExpectedValue EvSplits(const RuleSet& ruleset, const State& state) {
+  const auto& [first, second] = Split(ruleset, state);
+  return ExpectedValue(EvBest(ruleset, first).value + EvBest(ruleset, second).value);
+}
+
 // Value of playing a state optimally: a terminal state is simply scored,
 // otherwise it is the greatest expected value over every allowed action. This
 // drives both the player's choices and the dealer's forced play, since a
@@ -87,31 +93,42 @@ ExpectedValue EvBest(const RuleSet& ruleset, const State& state) {
   if (IsAllowed(state.allowedActions, Action::Double))
     best = std::max(best, EvDoubles(ruleset, state));
 
+  if (IsAllowed(state.allowedActions, Action::Split))
+    best = std::max(best, EvSplits(ruleset, state));
+
   return best;
 }
 
 ExpectedValue EvPlayerBestAction(const RuleSet& ruleset, PlayerHand playerHand,
                                  DealerHand dealerHand) {
   return EvBest(ruleset,
-                InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
+                InitializeState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerStands(const RuleSet& ruleset, PlayerHand playerHand,
                              DealerHand dealerHand) {
   return EvStands(ruleset,
-                  InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
+                  InitializeState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerHits(const RuleSet& ruleset, PlayerHand playerHand,
                            DealerHand dealerHand) {
   return EvHits(ruleset,
-                InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
+                InitializeState(ruleset, Turn::Player, playerHand, dealerHand));
 }
 
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset, PlayerHand playerHand,
                               DealerHand dealerHand) {
   return EvDoubles(
-      ruleset, InitiateState(ruleset, Turn::Player, playerHand, dealerHand));
+      ruleset, InitializeState(ruleset, Turn::Player, playerHand, dealerHand));
+}
+
+ExpectedValue EvPlayerSplits(const RuleSet& ruleset, PlayerHand playerHand,
+                             DealerHand dealerHand) {
+  return EvSplits(
+      ruleset,
+      InitializeState(ruleset, Turn::Player, playerHand, dealerHand,
+                      Action::Hit | Action::Stand | Action::Double | Action::Split));
 }
 
 }  // namespace BlackjackEngine::Bayes

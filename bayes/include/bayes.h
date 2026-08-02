@@ -22,4 +22,7 @@ ExpectedValue EvPlayerHits(const RuleSet& ruleset, PlayerHand playerHand,
 ExpectedValue EvPlayerDoubles(const RuleSet& ruleset, PlayerHand playerHand,
                               DealerHand dealerHand);
 
+ExpectedValue EvPlayerSplits(const RuleSet& ruleset, PlayerHand playerHand,
+                             DealerHand dealerHand);
+
 }  // namespace BlackjackEngine::Bayes

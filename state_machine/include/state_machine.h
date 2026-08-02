@@ -5,6 +5,8 @@
 #include "ruleset.h"
 #include "state.h"
 
+#include <utility>
+
 namespace BlackjackEngine::StateMachine {
 
 // The result of a finished round, from the player's perspective.
@@ -32,10 +34,10 @@ Outcome Result(const State& state);
 // the double requirement is met (it is the player's turn holding exactly two
 // cards). A dealer-turn state is advanced straight to the dealer's forced
 // state.
-State InitiateState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
-                    DealerHand dealerHand,
-                    Action allowedActions = Action::Hit | Action::Stand |
-                                            Action::Double);
+State InitializeState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
+                      DealerHand dealerHand,
+                      Action allowedActions = Action::Hit | Action::Stand |
+                                              Action::Double);
 
 // Stand: the acting party takes no more cards. On the player's turn play passes
 // to the dealer, who is advanced to their next forced state; on the dealer's
@@ -52,6 +54,11 @@ State Hit(const RuleSet& ruleset, const State& state, Card card);
 // the following Stand passes play to the dealer. Currently only the player is
 // allowed to double.
 State Double(const State& state, Card card);
+
+// Split: split the two same value cards into two different hands.
+// Currently only the player is allowed to split.
+// Only allowed if the player hand has two cards with exactly the same value.
+std::pair<State, State> Split(const RuleSet& ruleset, const State& state);
 
 }  // namespace BlackjackEngine::StateMachine
 
