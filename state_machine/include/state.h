@@ -29,7 +29,7 @@ struct State {
 
   constexpr State(Turn turn, PlayerHand playerHand, DealerHand dealerHand,
                   Action allowedActions = Action::Hit | Action::Stand |
-                                          Action::Double)
+                                          Action::Double | Action::Split)
       : turn(turn),
         playerHand(playerHand),
         dealerHand(dealerHand),

@@ -37,7 +37,7 @@ Outcome Result(const State& state);
 State InitializeState(const RuleSet& ruleset, Turn turn, PlayerHand playerHand,
                       DealerHand dealerHand,
                       Action allowedActions = Action::Hit | Action::Stand |
-                                              Action::Double);
+                                              Action::Double | Action::Split);
 
 // Stand: the acting party takes no more cards. On the player's turn play passes
 // to the dealer, who is advanced to their next forced state; on the dealer's
