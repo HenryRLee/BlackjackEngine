@@ -34,8 +34,8 @@ enum ActionAllowed
 
 void EvMain(string arg)
 {
-	ProbabilityCalculator * cal = new AdvancedCalculator;
-//	ProbabilityCalculator * cal = new SimpleFastCalculator;
+//	ProbabilityCalculator * cal = new AdvancedCalculator;
+	ProbabilityCalculator * cal = new SimpleFastCalculator;
 //	ProbabilityCalculator * cal = new AdvancedFastCalculator;
 	UsedCard current = usedcard;
 	string sPScore;

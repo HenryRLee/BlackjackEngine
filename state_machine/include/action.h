@@ -12,6 +12,7 @@ enum class Action : unsigned char {
   Hit = 1u << 0,
   Stand = 1u << 1,
   Double = 1u << 2,
+  Split = 1u << 3,
 };
 
 constexpr Action operator|(Action a, Action b) {

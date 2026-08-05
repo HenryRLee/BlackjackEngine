@@ -24,18 +24,18 @@ void ProbabilityCalculator::ShowDeltaOfEachTakenCard(int iPlayerScore,
 
 ProbabilityCalculator::ProbabilityCalculator(void)
 {
-	iMaxTimesSplitted = 1;
+	iMaxTimesSplitted = 4;
 	bResplitAces = false;
 	bHitOnSoft17 = false;
-	bDOBO = true;
+	bDOBO = false;
 	bSOBO = false;
 	iDeckNumber = 6;
-	bDoubleOnAnyTwo = false;
-	bDoubleOnSoft = false;
+	bDoubleOnAnyTwo = true;
+	bDoubleOnSoft = true;
 	bDoubleOnNine = true;
 	bDoubleOnTen = true;
 	bDoubleOnEleven = true;
-	bStandAfterSplittedAces = true;
+	bStandAfterSplittedAces = false;
 }
 
 ProbabilityCalculator::~ProbabilityCalculator(void)
